@@ -1,0 +1,8 @@
+language: perl
+perl:
+  - "5.16"
+  - "5.14"
+services: mysql
+before_script:
+  - mysql -e "create database npgt; CREATE USER 'root'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
+
