@@ -5,4 +5,7 @@ perl:
 services: mysql
 before_script:
   - mysql -e "create database npgt; CREATE USER 'root'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install libgd2-xpm-dev
 
