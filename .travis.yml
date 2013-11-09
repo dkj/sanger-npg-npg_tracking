@@ -8,4 +8,5 @@ before_script:
 before_install:
   - sudo apt-get update
   - sudo apt-get install libgd2-xpm-dev
+  - cpanm --quiet --notest Alien::Tidyp
 
