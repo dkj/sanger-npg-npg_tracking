@@ -119,9 +119,10 @@ sub location_is_instrument {
                                # that later causes warnings
       next;
     }
-    my $cname = _comp_name_by_host( $ip );
+    my ($cname, $fqdn) = _comp_name_by_host( $ip );
     if ($cname) {
-      my $selected_instrument = $instrument->instrument_by_instrument_comp ( $cname );
+      my $selected_instrument = $instrument->instrument_by_instrument_comp ( $fqdn ) ||
+                                $instrument->instrument_by_instrument_comp ( $cname );
       if ( $selected_instrument ) {
         $id_instrument = $selected_instrument->id_instrument();
         last;
@@ -137,14 +138,11 @@ sub location_is_instrument {
 sub _comp_name_by_host {
   my ( $ip ) = @_;
   ##no critic(RequireCheckingReturnValueOfEval)
-  my $comp_name;
+  my ($comp_name, $fqdn);
   eval {
-    my $hostname = gethostbyaddr inet_aton($ip), AF_INET;
-    if ($hostname) {
-      ( $comp_name ) = $hostname =~ /^((?:\w|-)+)/mxs;
-    }
+    ($comp_name, $fqdn) =  (gethostbyaddr inet_aton($ip), AF_INET)[1,0];
   };
-  return $comp_name;
+  return $comp_name, $fqdn;
 }
 
 sub ajax_array_cost_group_values {
