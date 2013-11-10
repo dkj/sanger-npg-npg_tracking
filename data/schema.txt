@@ -205,7 +205,7 @@ CREATE TABLE `instrument` (
   `serial` char(128) NOT NULL DEFAULT '',
   `iscurrent` tinyint(1) NOT NULL DEFAULT '0',
   `ipaddr` char(15) DEFAULT '',
-  `instrument_comp` varchar(32) DEFAULT NULL,
+  `instrument_comp` varchar(128) DEFAULT NULL,
   `mirroring_host` varchar(16) DEFAULT NULL,
   `staging_dir` varchar(128) DEFAULT NULL,
   `latest_contact` datetime DEFAULT NULL,

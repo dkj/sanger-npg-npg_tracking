@@ -91,7 +91,7 @@ __PACKAGE__->table("instrument");
 
   data_type: 'varchar'
   is_nullable: 1
-  size: 32
+  size: 128
 
 =head2 mirroring_host
 
@@ -146,7 +146,7 @@ __PACKAGE__->add_columns(
   "ipaddr",
   { data_type => "char", default_value => "", is_nullable => 1, size => 15 },
   "instrument_comp",
-  { data_type => "varchar", is_nullable => 1, size => 32 },
+  { data_type => "varchar", is_nullable => 1, size => 128 },
   "mirroring_host",
   { data_type => "varchar", is_nullable => 1, size => 16 },
   "staging_dir",
@@ -312,8 +312,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-07-23 16:11:42
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:F7mTaj060i1RggPpHSpfXw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-11-10 20:50:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aFOXYo/Rd7k1QZTt4bsmUQ
 # Author:        david.jackson@sanger.ac.uk
 # Maintainer:    $Author: mg8 $
 # Created:       2010-04-08

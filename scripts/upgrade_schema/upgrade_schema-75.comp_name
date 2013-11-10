@@ -1,0 +1,1 @@
+ALTER TABLE instrument CHANGE COLUMN instrument_comp instrument_comp VARCHAR(128) DEFAULT NULL;
