@@ -1,4 +1,5 @@
 .gitignore
+.travis.yml
 bin/cbot_checker
 bin/email_project_followers_run_complete_archived
 bin/event_notifications
