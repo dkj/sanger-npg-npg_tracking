@@ -57,7 +57,7 @@ if ($code) {
 		die "Meep! State is wrong!\n  Was: ", $cookies{'OIDC_STATE'}->value(), "\n   Is: ", $q->param('state'), "\n";
 	}
 	# send the code back to the server to get an id_token
-	my $id_token = $oidc->getidtoken($code, 'https://'.$ENV{SERVER_NAME}.$ENV{SCRIPT_NAME});
+	my $id_token = $oidc->getidtoken($code, $q->url(-full => 0, -query =>0));
 	my @a = split '\.', $id_token;
 	my $profile = decode_base64url($a[1]);
 	my $p = decode_json($profile);
@@ -105,7 +105,7 @@ sub oidcLogin
 	$url .= '&scope='.uri_escape('openid email');
 	$url .= '&response_type='.uri_escape('code');
 	$url .= '&state='.uri_escape($state);
-	$url .= '&redirect_uri=https://'.$ENV{SERVER_NAME}.$ENV{SCRIPT_NAME};
+	$url .= '&redirect_uri=' . $q->url(-full => 0, -query =>0) ;
 	# redirect to authorization server
 	redirect($url, [$cookie, $destCookie]);
 }
