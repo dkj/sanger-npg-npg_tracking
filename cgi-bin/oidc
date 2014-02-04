@@ -132,7 +132,6 @@ sub createLongCookie
 	my $cookie = $q->cookie(-name => $oidc->long_cookie_name,
 	                        -value => $cookie_value,
 	                        -expires => $expire,
-	                        -domain => $ENV{HTTP_HOST},
 	                        -secure => 0,
 	                        -httponly => 1);
 	return $cookie;
