@@ -1,19 +1,28 @@
 // common javascript functions for NPG tracking pages
 // copied from svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/htdocs/js/npg.js, r15220
 
-function authlink() {
-  //var path_array = window.location.pathname.split( '/' );
-  //if (!path_array[0]) {
-  //  path_array.shift();
-  //}
-  //while (path_array.length > 1) {
-  //  path_array.pop();
-  //}
-  //path_array.push('enigmatic.cgi');
-  //path_array.unshift(window.location.host);
-  //path_array.unshift('https:/');
-  //window.location.href = path_array.join('/');
-  window.location.href = 'https://npg.sanger.ac.uk/cgi-bin/enigmatic.cgi';
+function authlink(option) {
+  var path_array = window.location.pathname.split( '/' );
+  if (!path_array[0]) {
+    path_array.shift();
+  }
+  while (path_array.length > 1) {
+    path_array.pop();
+  }
+  if (option == 'ldap') {
+    window.location.href = 'https://npg.sanger.ac.uk/cgi-bin/enigmatic.cgi';
+    return;
+  } else {
+    path_array.push('oidc.cgi');
+  }
+  path_array.unshift(window.location.host);
+  path_array.unshift('https:/');
+  var x = path_array.join('/');
+  window.location.href = path_array.join('/');
+  if (option) {
+    x += '?authtype='+option;
+  }
+  window.location.href = x;
   return;
 }
 
