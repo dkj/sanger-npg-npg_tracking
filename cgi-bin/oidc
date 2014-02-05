@@ -63,21 +63,19 @@ if ($code) {
 	my $p = decode_json($profile);
 	die "Email not verified" unless ($p->{email_verified} eq 'true');
 	my $destination = $cookies{'DEST'}->value();
-	my $shortCookie = createShortCookie($id_token);
 	my $longCookie = createLongCookie($id_token);
 	my $payload = $oidc->verify($id_token);	# lets try validating it by checking the signature
 	die "Invalid token!" if (!$payload);
 	# everything is cool. Redirect to where we wanted to go in the first place
-	redirect($destination, [$shortCookie, $longCookie]);
+	redirect($destination, [$longCookie]);
 }
 
 #
 # This is the logout code
 #
-my $shortCookie = createShortCookie('','-1d');
 my $longCookie = createLongCookie('','-1d');
 my $url;
-my $cval = $q->cookie(-name => $oidc->short_cookie_name);
+my $cval = $q->cookie(-name => $oidc->long_cookie_name);
 # if we are logged in via oidc, then logout via oidc
 if ($cval) {
 	$url = $oidc->server . $oidc->logout_path . "?continue=$destination";
@@ -86,7 +84,7 @@ if ($cval) {
 }
 
 # logout and redirect
-redirect($url,[$COOKIE_EXPIRED,$shortCookie, $longCookie]);
+redirect($url,[$COOKIE_EXPIRED, $longCookie]);
 
 
 
@@ -108,20 +106,6 @@ sub oidcLogin
 	$url .= '&redirect_uri=' . $q->url(-full => 0, -query =>0) ;
 	# redirect to authorization server
 	redirect($url, [$cookie, $destCookie]);
-}
-
-sub createShortCookie
-{
-	my $cookie_value = shift;
-	my $expire = shift;
-	$expire ||= '+10h';
-	my $cookie = $q->cookie(-name => $oidc->short_cookie_name,
-	                        -value => $cookie_value,
-	                        -expires => $expire,
-	                        -domain => '.sanger.ac.uk',
-	                        -secure => 0,
-	                        -httponly => 1);
-	return $cookie;
 }
 
 sub createLongCookie

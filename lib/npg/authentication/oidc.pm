@@ -145,12 +145,6 @@ has certs_cache_file => (
     default        => '/tmp/certs.txt',
 );
 
-has short_cookie_name => (
-    is            => 'ro',
-    isa            => 'Str',
-    default        => 'OIDC_SHORT_COOKIE',
-);
-
 has long_cookie_name => (
     is            => 'ro',
     isa            => 'Str',
