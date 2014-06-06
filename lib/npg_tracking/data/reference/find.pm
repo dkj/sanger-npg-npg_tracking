@@ -1,10 +1,6 @@
 #########
 # Author:        Marina Gourtovaia
-# Maintainer:    $Author: mg8 $
 # Created:       14 April 2009
-# Last Modified: $Date: 2013-01-23 16:49:39 +0000 (Wed, 23 Jan 2013) $
-# Id:            $Id: find.pm 16549 2013-01-23 16:49:39Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg_tracking/data/reference/find.pm $
 #
 
 package npg_tracking::data::reference::find;
@@ -24,7 +20,7 @@ use st::api::lims;
 
 with qw/ npg_tracking::data::reference::list /;
 
-our $VERSION = do { my ($r) = q$Revision: 16549 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 
 Readonly::Scalar our $NPG_DEFAULT_ALIGNER_OPTION => q{npg_default};
 Readonly::Scalar our $MINUS_ONE                  => -1;
@@ -34,8 +30,6 @@ Readonly::Scalar our $MINUS_ONE                  => -1;
 npg_tracking::data::reference::find
 
 =head1 VERSION
-
-$Revision: 16549 $
 
 =head1 SYNOPSIS
 
@@ -314,15 +308,15 @@ sub ref_info {
       while (my $line = <$fh>) {
         if ($line ne qq[\n] && $line !~ /^\#/smx) {
           $line =~ s/^\s+//sxm;
-	       $line =~ s/\s+$//sxm;
-	       $found = $line;
-	       last;
-	     }
+          $line =~ s/\s+$//sxm;
+          $found = $line;
+          last;
+       }
       }
       close $fh or croak qq[Cannot close $opts_in : $ERRNO];
       ## use critic
 
-	   $ref->aligner_options($found);
+     $ref->aligner_options($found);
 
     }else{
        $ref->aligner_options($NPG_DEFAULT_ALIGNER_OPTION);
@@ -361,7 +355,7 @@ sub _get_reference_path {
   if (!-e $dir) {
     ##no critic (ProhibitInterpolationOfLiterals)
     my $message = sprintf "Binary %s reference for %s, %s, %s does not exist; path tried %s",
-			  $self->aligner, $organism, $strain, $self->subset, $dir;
+        $self->aligner, $organism, $strain, $self->subset, $dir;
     ##use critic
     croak $message;
   }
@@ -394,18 +388,18 @@ sub lims2ref {
       if ($taxon_id) {
         my $description = $self->taxonid2species($taxon_id);
         if ($description->{species})  {
-	  my $strain =  $description->{strain} ?  $description->{strain} : q[];
-	  $ref_path = $self->_get_reference_path($description->{species}, $strain);
+          my $strain =  $description->{strain} ?  $description->{strain} : q[];
+          $ref_path = $self->_get_reference_path($description->{species}, $strain);
         }
         if (!$ref_path) {
-	  $self->messages->push(qq[no reference for taxon id $taxon_id]);
+          $self->messages->push(qq[no reference for taxon id $taxon_id]);
         }
       } else {
         foreach my $name (($lims->library_name, $lims->sample_name)) {
-	  if ($name && $name =~ /phix/ismx ) {
-	    $ref_path = $self->_get_reference_path($PHIX);
-	    last;
-	  }
+          if ($name && $name =~ /phix/ismx ) {
+            $ref_path = $self->_get_reference_path($PHIX);
+            last;
+          }
         }
       }
     }
@@ -418,10 +412,12 @@ sub _parse_reference_genome {
   my ($self, $reference_genome) = @_;
   $reference_genome ||= $self->reference_genome;
   if ($reference_genome) {
-    my @a = $reference_genome =~/ (\S+) \s+ [(] (\S+) [)] /smx;
-    if (scalar @a >= 2 && $a[0] && $a[1]) {
-      return @a;
-    }
+     ##also allows for transcriptome version e.g. 'Homo_sapiens (1000Genomes_hs37d5 + ensembl_release_75)'
+     my @a = $reference_genome  =~/  (\S+) \s+ [(]  (\S+) (?: \s+ \+ \s+ (\S+) )? [)]  /smx;
+     if (scalar @a >= 2 && $a[0] && $a[1]) {
+        if (! $a[2]) { $#a = 1; }
+        return @a;
+     }
   }
   return;
 }
@@ -486,7 +482,7 @@ __END__
 
 =head1 AUTHOR
 
-Author: Marina Gourtovaia E<lt>mg8@sanger.ac.ukE<gt>
+Marina Gourtovaia E<lt>mg8@sanger.ac.ukE<gt>
 
 =head1 LICENSE AND COPYRIGHT
 

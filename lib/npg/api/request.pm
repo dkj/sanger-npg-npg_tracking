@@ -1,7 +1,6 @@
 #############
 # Created By: Marina Gourtovaia
 # Created On: 11 June 2010
-# copied from: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/api/request.pm, r16549
 
 package npg::api::request;
 
@@ -16,8 +15,10 @@ use HTTP::Request::Common;
 use File::Basename;
 use File::Path;
 use File::Spec::Functions qw(catfile);
+use Readonly;
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$Revision: 16549 $ =~ /(\d+)/mxs; $r; };
+our $VERSION = '75.2';
+
 ## no critic (RequirePodAtEnd RequireCheckingReturnValueOfEval)
 
 =head1 NAME
@@ -25,8 +26,6 @@ use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$Revision: 16549 
 npg::api::request
 
 =head1 VERSION
-
-$Revision: 16549 $
 
 =head1 SYNOPSIS
 
@@ -134,6 +133,27 @@ sub _build_useragent {
     return $ua;
 }
 
+=head2 login
+
+login for making a HTTP request
+
+=cut
+has 'login' => (isa => 'Maybe[Str]',
+                is => 'ro',
+                required => 0,
+               );
+
+=head2 password
+
+password to go with login above
+
+=cut
+has 'password' =>(isa => 'Maybe[Str]',
+                  is => 'ro',
+                  required => 0,
+                 );
+
+
 =head2 make
 
 Contacts a web service to perform a requested operation.
@@ -161,7 +181,7 @@ sub make {
     if ($method ne $DEFAULT_METHOD) {
         if ($cache) {
             croak qq[$method requests cannot use cache: $uri];
-	}
+        }
         $content = $self->_from_web($uri, $method, $args);
     } else {
         my $path = q[];
@@ -170,7 +190,7 @@ sub make {
             $path = $self->_create_path($uri);
             if (!$path) {
                 croak qq[Empty path generated for $uri];
-	    }
+            }
         }
 
         $content = ($cache && !$ENV{$self->save2cache_dir_var_name}) ?
@@ -231,11 +251,11 @@ sub _check_cache_dir {
     if ($ENV{$self->save2cache_dir_var_name}) {
         if (!-w $cache) {
             croak qq[Cache directory $cache is not writable];
-	}
+        }
     } else {
         if (!-r $cache) {
             croak qq[Cache directory $cache is not readable];
-	}
+        }
     }
     return 1;
 }
@@ -263,11 +283,11 @@ sub _from_web {
     if ($path && $ENV{$self->save2cache_dir_var_name} && $ENV{$self->cache_dir_var_name}) {
         my $content;
         eval {
-	    $content = $self->_from_cache($path, $uri);
-	};
+          $content = $self->_from_cache($path, $uri);
+        };
         if ($content) {
             return $content;
-	}
+        }
     }
 
     my $req;
@@ -280,6 +300,9 @@ sub _from_web {
         $req->header('Accept' => $self->content_type);
     }
     $self->_personalise_request($req);
+    if ($self->login) {
+        $req->authorization_basic($self->login, $self->password);
+    }
 
     my $response = $self->_retry(sub {
              my $inner_response = $self->useragent()->request($req);
@@ -308,7 +331,7 @@ sub _from_web {
         my $content_type = $response->headers->header('Content-Type');
         if (!$content_type) {
             $content_type = $self->content_type;
-	}
+        }
         $self->_write2cache($path, $content, $content_type);
     }
 
@@ -325,7 +348,7 @@ sub _write2cache {
     if (-e $dir) {
         if (!-d $dir) {
             croak qq[$dir should be a directory];
-	}
+        }
     } else {
         File::Path::make_path($dir);
     }
@@ -437,7 +460,7 @@ __END__
 
 =head1 AUTHOR
 
-$Author: mg8 $
+Marina Gourtovaia
 
 =head1 LICENSE AND COPYRIGHT
 

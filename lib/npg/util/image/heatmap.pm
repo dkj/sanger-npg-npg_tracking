@@ -1,10 +1,6 @@
 #########
 # Author:        ajb
-# Maintainer:    $Author: mg8 $
 # Created:       2008-08-07
-# Last Modified: $Date: 2012-04-02 10:09:42 +0100 (Mon, 02 Apr 2012) $
-# Id:            $Id: heatmap.pm 15414 2012-04-02 09:09:42Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/util/image/heatmap.pm $
 #
 package npg::util::image::heatmap;
 use strict;
@@ -15,18 +11,19 @@ use base qw(npg::util::image::image);
 use Carp;
 use POSIX qw(floor ceil);
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevision: 15414 $ =~ /(\d+)/mxs; $r; };
+our $VERSION = '0';
 
-Readonly our $NUMBER_OF_LANES               => 8;
-Readonly our $ACCOUNT_FOR_GAP_BETWEEN_LANES => 14;
-Readonly our $PERCENTAGE_RANGE_MAX          => 100;
-Readonly our $PERC_ERROR_RANGE_MAX          => 10;
-Readonly our $ALLOCATE_WHITE                => 255;
-Readonly our $SPACE_FOR_LANE_NUMBER         => 30;
-Readonly our $THIRD                         => 3;
-Readonly our $GREY_COLOR_INDEX              => 105;
+use Readonly;
+Readonly::Scalar our $NUMBER_OF_LANES               => 8;
+Readonly::Scalar our $ACCOUNT_FOR_GAP_BETWEEN_LANES => 14;
+Readonly::Scalar our $PERCENTAGE_RANGE_MAX          => 100;
+Readonly::Scalar our $PERC_ERROR_RANGE_MAX          => 10;
+Readonly::Scalar our $ALLOCATE_WHITE                => 255;
+Readonly::Scalar our $SPACE_FOR_LANE_NUMBER         => 30;
+Readonly::Scalar our $THIRD                         => 3;
+Readonly::Scalar our $GREY_COLOR_INDEX              => 105;
 
-Readonly our %TILE_LAYOUTS         => {
+Readonly::Hash   our %TILE_LAYOUTS         => {
                                         12  => { TILES_ON_ROW => 12,   ROWS_ON_LANE => 1, TILE_WIDTH => 10 , MIRROR_EVENS => 0, CLUSTER_MAX => 1_500_000, INTENSITY_MAX =>1_000,},
                                         24  => { TILES_ON_ROW => 12,   ROWS_ON_LANE => 2, TILE_WIDTH => 10 , MIRROR_EVENS => 0, CLUSTER_MAX => 1_500_000, INTENSITY_MAX =>1_000,},
                                         32  => { TILES_ON_ROW => 8,   ROWS_ON_LANE => 4, TILE_WIDTH => 10 , MIRROR_EVENS => 0, CLUSTER_MAX => 1_500_000, INTENSITY_MAX =>1_000,},
@@ -156,8 +153,8 @@ sub plot_illumina_map {
                       ;
 
       push @{$self->image_map_reference()}, [$x1, $y1, $x2, $y2, {
-	position => $lane_count+1,
-	tile     => $tile_number,
+        position => $lane_count+1,
+        tile     => $tile_number,
         value    => $value,
       }];
     }
@@ -227,7 +224,7 @@ sub give_datum_a_gradient {
       if (ref$tile eq 'ARRAY') {
         if ($tile->[0]) {
           $all_data_points->{$tile->[0]}++;
-	}
+        }
       } else {
         $all_data_points->{$tile}++;
       }
@@ -251,7 +248,7 @@ sub give_datum_a_gradient {
 
       if ($count == $group_count) {
         $count = 1;
-	$gradient_index++;
+        $gradient_index++;
       } else {
         $count++
       }
@@ -260,7 +257,7 @@ sub give_datum_a_gradient {
 
   } else {
     if ($total_different_values == 0) {
-	return $all_data_points;
+      return $all_data_points;
     }
     $group_count = scalar@{$linear_gradient}/$total_different_values;
     $group_count = floor($group_count);
@@ -345,7 +342,7 @@ sub give_datum_a_range_gradient {
       if (ref$tile eq 'ARRAY') {
         if ($tile->[0]) {
           $all_data_points->{$tile->[0]}++;
-	}
+        }
       } else {
         $all_data_points->{$tile}++;
       }
@@ -380,7 +377,7 @@ sub give_datum_a_range_gradient {
 
       if ( $tile_value >= $bin_starts[$i]->[0] && (!$bin_starts[$a] || $tile_value <= $bin_starts[$a]->[0])) {
         $all_data_points->{$tile_value} = $bin_starts[$i]->[1];
-	last;
+        last;
       }
 
     }
@@ -405,7 +402,6 @@ sub get_movez_heatmap_color{
   return \%movez_heatmap_color;
 }
 
-
 1;
 
 __END__
@@ -415,8 +411,6 @@ __END__
 npg::util::image::heatmap
 
 =head1 VERSION
-
-$LastChangedRevision: 15414 $
 
 =head1 SYNOPSIS
 

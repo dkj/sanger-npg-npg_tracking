@@ -1,7 +1,6 @@
 #########
 # Author:        rmp
 # Created:       2007-03-28
-# copied from: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/st/api/sample.pm, r 16477
 
 package st::api::sample;
 
@@ -9,11 +8,10 @@ use base qw(st::api::base);
 use strict;
 use warnings;
 use Carp;
-use Data::Dumper;
 
 __PACKAGE__->mk_accessors(fields());
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$Revision: 16477 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 
 sub _parse_taxon_id {
     my ($self, $taxon_id) = @_;
@@ -22,7 +20,7 @@ sub _parse_taxon_id {
     if ($taxon_id) {
         my ($int_taxon_id) = $taxon_id =~ /^(\d+)\.0$/sxm;
         if ($int_taxon_id) {
-	   carp q[Sample ] . $self->id . qq[: taxon id is a float $taxon_id];
+           carp q[Sample ] . $self->id . qq[: taxon id is a float $taxon_id];
            return $int_taxon_id;
         }
     }
@@ -51,8 +49,8 @@ sub consent_withdrawn {
 sub description {
     my $self = shift;
     $self->parse();
-	my $result = $self->get('Sample Description');
-	return ref $result ? $result->[0] : $result;
+    my $result = $self->get('Sample Description');
+    return ref $result ? $result->[0] : $result;
 }
 
 sub organism {
@@ -112,8 +110,6 @@ __END__
 st::api::sample - an interface to sample lims
 
 =head1 VERSION
-
-$Revision: 16477 $
 
 =head1 SYNOPSIS
 

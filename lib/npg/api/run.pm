@@ -1,10 +1,6 @@
 #########
 # Author:        rmp
-# Maintainer:    $Author: mg8 $
 # Created:       2007-03-28
-# Last Modified: $Date: 2012-03-08 11:21:27 +0000 (Thu, 08 Mar 2012) $
-# Id:            $Id: run.pm 15308 2012-03-08 11:21:27Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/api/run.pm $
 #
 package npg::api::run;
 use strict;
@@ -20,7 +16,7 @@ use npg::api::run_annotation;
 use npg::api::instrument;
 use st::api::lims;
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$Revision: 15308 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 
 __PACKAGE__->mk_accessors(grep { $_ ne 'id_run' } fields());
 __PACKAGE__->hasmany([{annotation => 'run_annotation'}]);
@@ -173,7 +169,7 @@ sub run_pair {
 
   if(!$self->{'run_pair'}) {
     $self->{'run_pair'} = npg::api::run->new({
-					      'util'   => $self->util(),
+                                              'util'   => $self->util(),
                                               'id_run' => $self->id_run_pair(),
                                             });
   }
@@ -186,9 +182,9 @@ sub instrument {
 
   if(!$self->{instrument}) {
     $self->{instrument} = npg::api::instrument->new({
-						     util          => $self->util(),
-						     id_instrument => $self->id_instrument(),
-						    });
+                                                  util          => $self->util(),
+                                                  id_instrument => $self->id_instrument(),
+                                                });
   }
 
   return $self->{instrument};
@@ -207,8 +203,8 @@ sub run_lanes {
     ## no critic (ProhibitComplexMappings)
     $self->{run_lanes} = [map { weaken($_->{run}); $_; }
                           map { $_->{run} = $self; $_; }
-			  map { npg::api::run_lane->new_from_xml('npg::api::run_lane', $_, $self->util()); }
-			  $run_lanes->getElementsByTagName('run_lane')];
+                          map { npg::api::run_lane->new_from_xml('npg::api::run_lane', $_, $self->util()); }
+                          $run_lanes->getElementsByTagName('run_lane')];
   }
 
   ## use critic
@@ -340,8 +336,6 @@ __END__
 npg::api::run
 
 =head1 VERSION
-
-$Revision: 15308 $
 
 =head1 SYNOPSIS
 

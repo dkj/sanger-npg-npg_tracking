@@ -1,10 +1,6 @@
 #########
 # Author:        rmp
-# Maintainer:    $Author: mg8 $
 # Created:       2008-01
-# Last Modified: $Date: 2012-03-08 11:21:27 +0000 (Thu, 08 Mar 2012) $
-# Id:            $Id: search.pm 15308 2012-03-08 11:21:27Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/model/search.pm $
 #
 package npg::model::search;
 use strict;
@@ -13,7 +9,7 @@ use base qw(npg::model);
 use Carp;
 use List::MoreUtils;
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevision: 15308 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 
 __PACKAGE__->mk_accessors(fields());
 
@@ -313,20 +309,20 @@ sub join_conditions {
   foreach my $table (sort keys %{$foreign_keys}) {
     foreach my $pair (@from_pairs) {
       if (( List::MoreUtils::any {$_ eq $pair->[0]} @{$foreign_keys->{$table}} ) && ( List::MoreUtils::any {$_ eq $pair->[1]} @{$foreign_keys->{$table}} )) {
-  	my $temp = $pair->[0] . '.id_' . $pair->[0] . ' = ' . $table . '.id_' . $pair->[0];
-  	if(!$seen{$temp}) {
-  	  push @joins, $temp;
-  	  $seen{$temp}++;
-  	}
-  	$temp = $pair->[1] . '.id_' . $pair->[1] . ' = ' . $table . '.id_' . $pair->[1];
-  	if(!$seen{$temp}) {
-  	  push @joins, $temp;
-  	  $seen{$temp}++;
-  	}
-  	if (!$from_seen->{$table}) {
-  	  push @{$from_array}, $table;
-  	  $from_seen->{$table}++;
-  	}
+        my $temp = $pair->[0] . '.id_' . $pair->[0] . ' = ' . $table . '.id_' . $pair->[0];
+        if(!$seen{$temp}) {
+          push @joins, $temp;
+          $seen{$temp}++;
+        }
+        $temp = $pair->[1] . '.id_' . $pair->[1] . ' = ' . $table . '.id_' . $pair->[1];
+        if(!$seen{$temp}) {
+          push @joins, $temp;
+          $seen{$temp}++;
+        }
+        if (!$from_seen->{$table}) {
+          push @{$from_array}, $table;
+          $from_seen->{$table}++;
+        }
       }
     }
   }
@@ -334,10 +330,10 @@ sub join_conditions {
     my $links = $foreign_keys->{$from};
     if ($links) {
       foreach my $link (@{$links}) {
-  	my $temp = $link . '.id_' . $link . ' = ' . $from . '.id_' . $link;
-  	if (!$seen{$temp}) {
-  	  push @joins, $temp;
-  	}
+        my $temp = $link . '.id_' . $link . ' = ' . $from . '.id_' . $link;
+        if (!$seen{$temp}) {
+          push @joins, $temp;
+        }
       }
     }
   }
@@ -345,7 +341,7 @@ sub join_conditions {
     my $count = 0;
     foreach my $from (@{$from_array}) {
       if ($join =~ /$from[.]/xms) {
-  	$count++;
+        $count++;
       }
     }
     if ($count > 1) {
@@ -443,8 +439,6 @@ __END__
 npg::model::search
 
 =head1 VERSION
-
-$LastChangedRevision: 15308 $
 
 =head1 SYNOPSIS
 

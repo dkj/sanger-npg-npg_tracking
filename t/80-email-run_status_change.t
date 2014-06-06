@@ -1,12 +1,3 @@
-#########
-# Author:        jo3
-# Maintainer:    $Author: mg8 $
-# Created:       2010_07_29
-# Last Modified: $Date: 2013-01-08 15:26:40 +0000 (Tue, 08 Jan 2013) $
-# Id:            $Id: 80-email-run_status_change.t 16411 2013-01-08 15:26:40Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/t/80-email-run_status_change.t $
-
-
 use strict;
 use warnings;
 use DateTime;
@@ -94,7 +85,7 @@ cmp_deeply( $test[0]->batch_details(),
 
 my $bd = $test[1]->batch_details();
 is($bd->{batch_id}, undef, 'batch id undefined');
-like($bd->{error}, qr/Attribute \(batch_id\) does not pass the type constraint because: Validation failed for 'NpgTrackingPositiveInt' (failed\s)?with value 0/, 'Error string for batch id zero is correct');
+like($bd->{error}, qr/Attribute \(batch_id\) does not pass the type constraint because: Validation failed .+ with value 0/, 'Error string for batch id zero is correct');
 
 lives_ok {  $test[2] = npg::email::event::status_change::run->new(
                     { id_event    => 26,

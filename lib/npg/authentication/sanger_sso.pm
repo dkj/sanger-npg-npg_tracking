@@ -1,9 +1,5 @@
 # Author:        david.jackson@sanger.ac.uk
-# Maintainer:    $Author: mg8 $
 # Created:       2010-04-28
-# Last Modified: $Date: 2013-01-23 16:49:39 +0000 (Wed, 23 Jan 2013) $
-# Id:            $Id: sanger_sso.pm 16549 2013-01-23 16:49:39Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/authentication/sanger_sso.pm $
 
 package npg::authentication::sanger_sso;
 
@@ -14,8 +10,9 @@ use Crypt::CBC;
 use MIME::Base64;
 use CGI;
 use Carp;
+use Readonly;
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevision: 16549 $ =~ /(\d+)/mxs; $r; };
+our $VERSION = '0';
 
 our @EXPORT_OK = qw(sanger_cookie_name sanger_username);
 
@@ -36,11 +33,11 @@ sub sanger_username {
     $unescaped =~ s/\ /+/mxg;
     ##use critic
     my $decoded = decode_base64($unescaped);
-    my $crypt = Crypt::CBC->new(-key         => $enc_key,
-	                        -literal_key => 1,
-	                        -cipher      => 'Blowfish',
-	                        -header      => 'randomiv',
-	                        -padding     => 'space');
+    my $crypt = Crypt::CBC->new(  -key         => $enc_key,
+                                  -literal_key => 1,
+                                  -cipher      => 'Blowfish',
+                                  -header      => 'randomiv',
+                                  -padding     => 'space');
     my $decrypted = $crypt->decrypt($decoded);
     ($username, $at_domain) = $decrypted =~ /<<<<(\w+)(@[\w|\.]+)?/xms;
     if ($username && $at_domain) {
@@ -58,8 +55,6 @@ __END__
   npg::authentication::sanger_sso
 
 =head1 VERSION
-
-$LastChangedRevision: 16549 $
 
 =head1 SYNOPSIS
 
@@ -105,7 +100,7 @@ Called by Catalyst authentication infrastructure....
 
 =head1 AUTHOR
 
-$Author: mg8 $
+David Jackson
 
 =head1 LICENSE AND COPYRIGHT
 

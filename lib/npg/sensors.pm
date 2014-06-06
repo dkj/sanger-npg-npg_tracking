@@ -1,10 +1,6 @@
 #############
-# $Id: sensors.pm 15402 2012-03-29 16:11:11Z mg8 $
 # Created By: Jennifer Liddle (js10@sanger.ac.uk)
-# Last Maintained By: $Author: mg8 $
 # Created On: 2012-03-13
-# Last Changed On: $Date: 2012-03-29 17:11:11 +0100 (Thu, 29 Mar 2012) $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/sensors.pm $
 
 package npg::sensors;
 use strict;
@@ -12,15 +8,17 @@ use warnings;
 use Moose;
 use Carp;
 use English qw{-no_match_vars};
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevision: 15402 $ =~ /(\d+)/mxs; $r; };
-
+use Readonly;
 use npg_tracking::Schema;
 use npg::util::mailer;
 use XML::Simple;
 use Data::Dumper;
 use LWP::UserAgent;
+use npg::api::request;
 
 with 'MooseX::Getopt';
+
+our $VERSION = '0';
 
 Readonly::Scalar our $DEFAULT_URL => 'http://netbotz-h237.internal.sanger.ac.uk/xmlQuery/sensors/';
 Readonly::Scalar our $DEFAULT_USERNAME => 'lims';
@@ -55,7 +53,7 @@ has schema => (
 );
 
 sub _build_schema {
-	return npg_tracking::Schema->connect();
+  return npg_tracking::Schema->connect();
 }
 
 =head1 NAME
@@ -64,7 +62,6 @@ npg::sensors
 
 =head1 VERSION
 
-$LastChangedRevision: 15402 $
 
 =head1 SYNOPSIS
 
@@ -77,71 +74,56 @@ $LastChangedRevision: 15402 $
 =cut
 
 sub main {
-	my $self = shift;
-	$self->load_data();
-	$self->post_data();
-	return 0;
+  my $self = shift;
+  $self->load_data();
+  $self->post_data();
+  return 0;
 }
 
 =head2 load_data
 
 =cut
 sub load_data {
-	my ($self, $arg_refs) = @_;
-
-	# create a user agent object
-	my $ua = LWP::UserAgent->new();
-
-	# Create a request
-	my $req = HTTP::Request->new(POST => $self->url);
-	$req->authorization_basic($self->username, $self->password);
-
-	# Pass request to the user agent and get a response back
-	my $res = $ua->request($req);
-
-	# Check the outcome of the response
-	if (!$res->is_success) {
-		die $res->status_line, "\n";
-	}
-
-	$data = $res->content;
-	return $data;
+  my ($self, $arg_refs) = @_;
+  my $request = npg::api::request->new({content_type => 'text/xml', login => $self->username, password => $self->password});
+  $data = $request->make($self->url, 'GET');
+  return $data;
 }
 
 =head2 post_data
 
 =cut
 sub post_data {
-	my $self = shift;
-	my $xml = XML::Simple->new();
-	my $schema = $self->schema;
+  my $self = shift;
+  my $xml = XML::Simple->new();
+  my $schema = $self->schema;
 
-	my $ref = XMLin($data);
-	my $sensors = $ref->{variable};
-	foreach my $s (@{$sensors}) {
-		if (exists $s->{guid} && exists $s->{'double-val'}) {
-			my $guid = $s->{guid};
-			my $temperature = $s->{'double-val'};
-			my $dbic_sensor = $schema->resultset('Sensor')->find({guid => $guid});
+  my $ref = XMLin($data);
+  my $sensors = $ref->{variable};
+  foreach my $s (@{$sensors}) {
+    if (exists $s->{guid} && exists $s->{'double-val'}) {
+      my $guid = $s->{guid};
+      my $temperature = $s->{'double-val'};
+      my $dbic_sensor = $schema->resultset('Sensor')->find({guid => $guid});
                         if (!$dbic_sensor) {
                             carp "Sensor with guid $guid not found in the sensor table";
-			    next;
-			}
-			$schema->resultset('SensorData')->create({
-				id_sensor => $dbic_sensor->id_sensor,
-				date => $ref->{time},
-				value => $temperature});
-			if (($temperature > $MAX_TEMPERATURE) || ($temperature < $MIN_TEMPERATURE)) {
-				npg::util::mailer->new({
-					to => 'js10@sanger.ac.uk',
-					from => 'npg@sanger.ac.uk',
-					subject => 'Temperature warning',
-					body => "The temperature of sensor $guid is now $temperature.",
-				})->mail();
-			}
-		}
-	}
-	return 0;
+          next;
+      }
+      $schema->resultset('SensorData')->create({
+        id_sensor => $dbic_sensor->id_sensor,
+        date => $ref->{time},
+        value => $temperature});
+      if (($temperature > $MAX_TEMPERATURE) || ($temperature < $MIN_TEMPERATURE)) {
+        npg::util::mailer->new({
+          to => 'js10@sanger.ac.uk',
+          from => 'npg@sanger.ac.uk',
+          subject => 'Temperature warning',
+          body => "The temperature of sensor $guid is now $temperature.",
+        })->mail();
+      }
+    }
+  }
+  return 0;
 }
 
 no Moose;
@@ -173,7 +155,7 @@ __END__
 
 =head1 AUTHOR
 
-$Author: mg8 $
+Jennifer Liddle
 
 =head1 LICENSE AND COPYRIGHT
 

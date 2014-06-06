@@ -1,7 +1,6 @@
 #######
 # Author:        Marina Gourtovaia
 # Created:       July 2013
-# copied from: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/st/api/lims.pm, r16549
 #
 
 package st::api::lims;
@@ -20,6 +19,8 @@ with qw/  npg_tracking::glossary::run
           npg_tracking::glossary::lane
           npg_tracking::glossary::tag
        /;
+
+our $VERSION = '0';
 
 =head1 NAME
 
@@ -40,6 +41,8 @@ Generic NPG pipeline oriented LIMS wrapper capable of retrieving data from multi
 =head1 SUBROUTINES/METHODS
 
 =cut
+
+Readonly::Scalar my  $CACHED_SAMPLESHEET_FILE_VAR_NAME => 'NPG_CACHED_SAMPLESHEET_FILE';
 
 Readonly::Scalar my  $PROC_NAME_INDEX   => 3;
 Readonly::Hash   my  %QC_EVAL_MAPPING   => {'pass' => 1, 'fail' => 0, 'pending' => undef, };
@@ -113,8 +116,20 @@ Driver type (xml, etc), currently defaults to xml
 has 'driver_type' => (
                         isa     => 'Str',
                         is      => 'ro',
-                        default => $IMPLEMENTED_DRIVERS[0],
+                        lazy_build => 1,
                      );
+sub _build_driver_type {
+  my $self = shift;
+  my $cached_path = $ENV{$CACHED_SAMPLESHEET_FILE_VAR_NAME};
+  if ($self->_has_path || ($cached_path && -f $cached_path)) {
+    if (!$self->_has_path) {
+      $self->_set_path($cached_path);
+      $self->clear_batch_id();
+    }
+    return $IMPLEMENTED_DRIVERS[1];
+  }
+  return $IMPLEMENTED_DRIVERS[0];
+}
 
 =head2 driver
 
@@ -129,8 +144,8 @@ has 'driver' => (
 sub _build_driver {
   my $self = shift;
   my $d_package = $self->_driver_package_name;
-  ##no critic (ProhibitStringyEval RequireCheckingReturnValueOfEval)
-  eval "require $d_package";
+  ##no critic (ProhibitStringyEval)
+  eval "require $d_package" or croak "Error loading package $d_package: " . $EVAL_ERROR;
   ##use critic
   my $ref = {};
   foreach my $attr (qw/tag_index position id_run path/) {
@@ -163,6 +178,17 @@ for my$m ( @DELEGATED_METHODS ){
 index end
 
 =cut
+
+has 'inline_index_read' => (isa => 'Maybe[Int]',
+                           is => 'ro',
+                           lazy_build => 1,
+                          );
+
+sub _build_inline_index_read {
+  my $self = shift;
+  my @x = _parse_sample_description($self->_sample_description);
+  return $x[3];  ## no critic (ProhibitMagicNumbers)
+}
 
 has 'inline_index_end' => (isa => 'Maybe[Int]',
                            is => 'ro',
@@ -216,9 +242,11 @@ Samplesheet path
 
 =cut
 has 'path' => (
-                  isa      => 'Str',
-                  is       => 'ro',
-                  required => 0,
+                  isa       => 'Str',
+                  is        => 'ro',
+                  required  => 0,
+                  predicate => '_has_path',
+                  writer    => '_set_path',
               );
 
 =head2 id_run
@@ -246,20 +274,16 @@ Tag index, optional attribute.
 Batch id, optional attribute.
 
 =cut
-has 'batch_id'  =>        (isa             => 'NpgTrackingPositiveInt',
+has 'batch_id'  =>        (isa             => 'Maybe[NpgTrackingPositiveInt]',
                            is              => 'ro',
                            lazy_build      => 1,
                           );
 sub _build_batch_id {
   my $self = shift;
-
-  if ($self->id_run) {
-    if ($self->driver_type eq 'xml') {
-      return $self->driver->batch_id;
-    }
-    croak q[Cannot build batch_id from id_run for driver type ] . $self->driver_type;
+  if ($self->id_run && $self->driver_type eq 'xml') {
+    return $self->driver->batch_id;
   }
-  croak q[Cannot build batch_id: id_run is not supplied];
+  return;
 }
 
 =head2 tag_sequence
@@ -359,8 +383,8 @@ sub _entity_required_insert_size {
       foreach my $key (qw/to from/) {
         my $value = $is->{$key};
         if ($value) {
-	  my $lib_key = $lims->library_id || $lims->tag_index || $lims->sample_id;
-	  $is_hash->{$lib_key}->{$key} = $value;
+          my $lib_key = $lims->library_id || $lims->tag_index || $lims->sample_id;
+          $is_hash->{$lib_key}->{$key} = $value;
         }
       }
     }
@@ -497,6 +521,17 @@ sub _build__cached_children {
     }
   }
   return \@children;
+}
+
+=head2 cached_samplesheet_var_name
+
+Returns the name of the env. variable for storing the full path of the cached
+samplesheet. If this variable is set and the driver is not given explicitly,
+a samplesheet driver is used by this class.
+
+=cut
+sub cached_samplesheet_var_name {
+  return $CACHED_SAMPLESHEET_FILE_VAR_NAME;
 }
 
 =head2 children
@@ -745,11 +780,18 @@ sub _parse_sample_description {
   my $tag=undef;
   my $start=undef;
   my $end=undef;
+  my $read=undef;
   if ($desc && (($desc =~ m/base\ indexing\ sequence/ismx) && ($desc =~ m/enriched\ mRNA/ismx))) {
     ($tag) = $desc =~ /\(([ACGT]+)\)/smx;
-    ($start, $end) = $desc =~ /bases\ (\d+)\ to\ (\d+)\ of\ read\ 1/smx;
+    if ($desc =~ /bases\ (\d+)\ to\ (\d+)\ of\ read\ 1/smx) {
+        ($start, $end, $read) = ($1, $2, 1);
+    } elsif ($desc =~ /bases\ (\d+)\ to\ (\d+)\ of\ non\-index\ read\ (\d)/smx) {
+        ($start, $end, $read) = ($1, $2, $3);
+    } else {
+        croak q[Error parsing sample description ] . $desc;
+    }
   }
-  return ($tag, $start, $end);
+  return ($tag, $start, $end, $read);
 }
 
 =head2 library_types
@@ -875,7 +917,7 @@ __END__
 
 =head1 AUTHOR
 
-Author: Marina Gourtovaia E<lt>mg8@sanger.ac.ukE<gt>
+Marina Gourtovaia E<lt>mg8@sanger.ac.ukE<gt>
 
 =head1 LICENSE AND COPYRIGHT
 

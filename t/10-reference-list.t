@@ -1,17 +1,8 @@
-#########
-# Author:        Marina Gourtovaia
-# Maintainer:    $Author: mg8 $
-# Created:       June 2010
-# Last Modified: $Date: 2013-01-28 11:09:22 +0000 (Mon, 28 Jan 2013) $
-# Id:            $Id: 10-reference-list.t 16566 2013-01-28 11:09:22Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/t/10-reference-list.t $
-#
-
 package reference;
 
 use strict;
 use warnings;
-use Test::More tests => 19;
+use Test::More tests => 20;
 use Test::Exception;
 use File::Spec::Functions qw(catfile);
 use Cwd qw(cwd);
@@ -31,7 +22,7 @@ use npg_tracking::data::reference::list;
 my $REP_ROOT=$npg_tracking::data::reference::list::REP_ROOT;
 
 SKIP: {
-  skip 'No live reference repository', 4 unless -e $REP_ROOT;
+  skip 'No live reference repository', 5 unless -e $REP_ROOT;
     
   my $live_lister =  Moose::Meta::Class->create_anon_class(
          roles => [qw/npg_tracking::data::reference::list/])->new_object();
@@ -39,6 +30,11 @@ SKIP: {
   is ($live_lister->adapter_repository, join(q[/], $REP_ROOT .q[adapters]), 'live adapter repository location');
   is ($live_lister->genotypes_repository, join(q[/], $REP_ROOT . q[genotypes]), 'live genotypes repository location');
   is ($live_lister->tag_sets_repository, join(q[/], $REP_ROOT .q[tag_sets]), 'live tag sets repository location');
+SKIP: {
+   skip 'transcriptomes not yet copied to  $REP_ROOT from /nfs/srpipe_references', 1 unless -d join(q[/], $REP_ROOT .q[transcriptomes]) ;
+
+  is ($live_lister->transcriptome_repository, join(q[/], $REP_ROOT .q[transcriptomes]), 'live transcriptomes repository location');
+  }
 };
 
 {

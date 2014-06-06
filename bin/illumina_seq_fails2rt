@@ -1,11 +1,8 @@
 #! /usr/bin/env perl
 # Send an email to illumina-sequencing-failures@sanger.ac.uk to have a ticket automatically created in that RT queue.
-# $Id: illumina_seq_fails2rt 16389 2013-01-07 11:04:50Z mg8 $
 # Created By: david.jackson@sanger.ac.uk
-# Last Maintained By: $Author: mg8 $
 # Created On: 2010-03-01
-# Last Changed On: $Date: 2013-01-07 11:04:50 +0000 (Mon, 07 Jan 2013) $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/bin/illumina_seq_fails2rt $
+#
 
 use strict;
 use warnings;
@@ -17,9 +14,11 @@ use List::MoreUtils qw/uniq/;
 use Carp;
 use File::Temp qw/ tempdir /;
 use DateTime;
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevision: 16389 $ =~ /(\d+)/mxs; $r; };
+use Readonly;
 use npg::api::run;
 use npg_tracking::Schema;
+
+our $VERSION = '0';
 
 Readonly::Scalar my $EMAIL_DOMAIN => q(@sanger.ac.uk);
 Readonly::Scalar my $EMAIL_DELIM  => q(;);
@@ -97,7 +96,7 @@ sub tickets4run {
       next unless (defined $l->seq_qc_state && !$l->seq_qc_state);
       my @p = $l->study_names($with_illumina_controls);
       foreach my $p (@p) {
-	push @{$study2lane{$p}},$l;
+        push @{$study2lane{$p}},$l;
       }
     }
 
@@ -115,10 +114,10 @@ sub tickets4run {
       my @pos = ();
       my @study_names = ();
       foreach my $study_name (keys %{$emails2studies->{$emails_set}}) {
-	my @limsa = @{$emails2studies->{$emails_set}->{$study_name}};
-	push @study_names, $study_name;
-	push @pos, map{$_->position} @limsa; 
-	push @library_names, map{$_->library_name} @limsa;
+        my @limsa = @{$emails2studies->{$emails_set}->{$study_name}};
+        push @study_names, $study_name;
+        push @pos, map{$_->position} @limsa; 
+        push @library_names, map{$_->library_name} @limsa;
       }
 
       @pos = uniq @pos;
@@ -136,10 +135,10 @@ sub tickets4run {
       $data   .= 'set-owner: '.$seqpm[int(rand(@seqpm))].qq(\n) if @seqpm;
       $data   .= "\nLane".(@pos>1?q(s ):q( )).join(',',@pos)." of Illumina sequencing run $id_run, corresponding to librar".(@pos>1?q(ies ):q(y )).join(', ',map{q['].$_.q[']} @library_names)." have failed their NPG QC stage. Stud". (@study_names>1?q(ies ):q(y ))  .": $studies.\n";
       my $msg = MIME::Lite->new(
-	From => ((getpwuid($<))[0]).$EMAIL_DOMAIN,
-	To => "illumina-sequencing-failures$EMAIL_DOMAIN",
-	Subject => "Run $id_run -- lane".(@pos>1?q(s ):q( )).join(',',@pos) . " -- $studies",
-	Data => $data,
+        From => ((getpwuid($<))[0]).$EMAIL_DOMAIN,
+        To => "illumina-sequencing-failures$EMAIL_DOMAIN",
+        Subject => "Run $id_run -- lane".(@pos>1?q(s ):q( )).join(',',@pos) . " -- $studies",
+        Data => $data,
       );
       $msg->print() if not $sendmsg;
       push @msg, $msg;
@@ -159,10 +158,10 @@ sub _studies2emails {
     my $lims = $studies_hash->{$study_name}->[0];
     if ($lims->is_pool) {
       foreach my $l ($lims->associated_child_lims) {
-	if ($l->study_name && $l->study_name eq $study_name) {
-	  $lims = $l;
-	  last;
-	}
+        if ($l->study_name && $l->study_name eq $study_name) {
+          $lims = $l;
+          last;
+        }
       }
     }
     my @emails_a =  uniq @{$lims->email_addresses_of_managers};

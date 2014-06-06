@@ -1,10 +1,6 @@
 #########
 # Author:        rmp
-# Maintainer:    $Author: mg8 $
 # Created:       2006-10-31
-# Last Modified: $Date: 2012-11-26 09:53:48 +0000 (Mon, 26 Nov 2012) $
-# Id:            $Id: run_status.pm 16269 2012-11-26 09:53:48Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/model/run_status.pm $
 #
 package npg::model::run_status;
 use strict;
@@ -18,8 +14,9 @@ use npg::model::run_status_dict;
 use npg::model::event;
 use Date::Parse;
 use DateTime;
+use Readonly;
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$Revision: 16269 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 
 Readonly::Hash our %DAYS_PER_STATUS => (
   'run complete' => 1,
@@ -67,9 +64,9 @@ sub create {
                   VALUES (?,now(),?,?,1));
 
     $dbh->do($query, {},
-	     $self->id_run(),
-	     $self->id_run_status_dict(),
-	     $self->id_user());
+            $self->id_run(),
+            $self->id_run_status_dict(),
+            $self->id_user());
 
     my $idref = $dbh->selectall_arrayref('SELECT LAST_INSERT_ID()');
     $self->id_run_status($idref->[0]->[0]);
@@ -90,13 +87,13 @@ sub create {
 
     my $msg = qq($desc for run @{[$self->run->name()]}\nhttp://npg.sanger.ac.uk/perl/npg/run/@{[$self->run->name()]}\n$history\n\n$contents_of_lanes);
     my $event = npg::model::event->new({
-					run                => $self->run(),
-					status_description => $desc,
-					util               => $util,
-					id_event_type      => 1, # run_status/status change
-					entity_id          => $self->id_run_status(),
-					description        => $msg,
-				       });
+                                      run                => $self->run(),
+                                      status_description => $desc,
+                                      util               => $util,
+                                      id_event_type      => 1, # run_status/status change
+                                      entity_id          => $self->id_run_status(),
+                                      description        => $msg,
+                                      });
     $event->{id_run} = $self->id_run();
     $event->create({run => $self->id_run(), id_user => $self->id_user()});
 
@@ -232,8 +229,6 @@ __END__
 npg::model::run_status
 
 =head1 VERSION
-
-$Revision: 16269 $
 
 =head1 SYNOPSIS
 

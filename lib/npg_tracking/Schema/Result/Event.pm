@@ -64,7 +64,7 @@ __PACKAGE__->table("event");
 
   data_type: 'varchar'
   is_nullable: 1
-  size: 255
+  size: 1024
 
 =head2 entity_id
 
@@ -78,7 +78,6 @@ the id of the entity having id_event_type.id_entity_type
 =head2 id_user
 
   data_type: 'bigint'
-  default_value: 0
   extra: {unsigned => 1}
   is_foreign_key: 1
   is_nullable: 0
@@ -116,7 +115,7 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
   "description",
-  { data_type => "varchar", is_nullable => 1, size => 255 },
+  { data_type => "varchar", is_nullable => 1, size => 1024 },
   "entity_id",
   {
     data_type => "bigint",
@@ -127,7 +126,6 @@ __PACKAGE__->add_columns(
   "id_user",
   {
     data_type => "bigint",
-    default_value => 0,
     extra => { unsigned => 1 },
     is_foreign_key => 1,
     is_nullable => 0,
@@ -186,16 +184,13 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-07-23 16:11:41
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:y2Y9SOEuUMYACHcvYHOOqg
-# Author:        david.jackson@sanger.ac.uk
-# Maintainer:    $Author: ajb $
-# Created:       2010-04-08
-# Last Modified: $Date: 2011-01-18 15:07:26 +0000 (Tue, 18 Jan 2011) $
-# Id:            $Id: Event.pm 12361 2011-01-18 15:07:26Z ajb $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg_tracking/Schema/Result/Event.pm $
+# Created by DBIx::Class::Schema::Loader v0.07036 @ 2014-02-28 12:00:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Va2X3mrYQthvC7JygMXvSw
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevision: 12361 $ =~ /(\d+)/mxs; $r; };
+# Author:        david.jackson@sanger.ac.uk
+# Created:       2010-04-08
+
+our $VERSION = '0';
 
 =head2 BUILD
 
@@ -215,6 +210,8 @@ sub BUILD {
     # '0000-00-00 00:00:00' gets written to the database, but undef gets
     # returned.
 
+    $self->id_user(0)
+        unless $self->id_user();
     $self->notification_sent('0000-00-00 00:00:00')
         unless $self->notification_sent();
 
@@ -239,11 +236,5 @@ sub entity_obj {
     return $obj;
 }
 
-
-1;
-
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
 1;

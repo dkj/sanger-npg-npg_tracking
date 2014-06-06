@@ -1,10 +1,6 @@
 #########
 # Author:        rmp
-# Maintainer:    $Author: mg8 $
 # Created:       2008-02-22
-# Last Modified: $Date: 2012-03-01 10:36:10 +0000 (Thu, 01 Mar 2012) $
-# Id:            $Id: event.pm 15277 2012-03-01 10:36:10Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/st/api/event.pm $
 #
 package st::api::event;
 use base qw(st::api::base);
@@ -17,7 +13,7 @@ require XML::Generator; # use() pollutes with AUTOLOAD
 
 __PACKAGE__->mk_accessors(fields());
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$Revision: 15277 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 
 sub live {
     my $self = shift;
@@ -45,19 +41,19 @@ sub create {
   my $xg     = XML::Generator->new();
   my $ent    = $self->entity_name();
   my $xml    = q(<?xml version='1.0'?>).
-               $xg->$ent(map  { $xg->$_($self->$_()) }
-			 grep { defined $self->$_() }
-			 $self->fields());
+  $xg->$ent(map  { $xg->$_($self->$_()) }
+  grep { defined $self->$_() }
+  $self->fields());
 
   push @{ $ua->requests_redirectable }, 'POST';
 
   my $response = $ua->post(
-			   $self->service(),
-			   'Content_Type'   => 'application/xml',
-			   'Content_Length' => length $xml,
-			   'Content'        => $xml,
-			   'Accept'         => 'text/xml',
-			  );
+         $self->service(),
+         'Content_Type'   => 'application/xml',
+         'Content_Length' => length $xml,
+         'Content'        => $xml,
+         'Accept'         => 'text/xml',
+        );
   if (!$response->is_success()) {
     croak q{Unable to update Sample Tracking: } . $response->status_line();
   }
@@ -72,8 +68,6 @@ __END__
 st::api::event - an interface to Sample Tracking events
 
 =head1 VERSION
-
-$LastChangedRevision: 15277 $
 
 =head1 SYNOPSIS
 

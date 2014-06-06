@@ -1,10 +1,6 @@
 #########
 # Author:        rmp
-# Maintainer:    $Author: mg8 $
 # Created:       2006-10-31
-# Last Modified: $Date: 2012-01-17 13:57:20 +0000 (Tue, 17 Jan 2012) $
-# Id:            $Id: event.pm 14928 2012-01-17 13:57:20Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/model/event.pm $
 #
 package npg::model::event;
 use strict;
@@ -19,12 +15,11 @@ use npg::model::user;
 use npg::model::run;
 use npg::util;
 
-use Readonly;
-
-Readonly::Scalar our $VERSION => do { my ($r) = q$Revision: 14928 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 
 my $MAIL_DOMAIN = npg::util::mail_domain();
 
+use Readonly;
 Readonly::Scalar our $LAST_INDEX => -1;
 Readonly::Scalar our $DESCRIPTION_LENGTH => 255;
 
@@ -46,9 +41,9 @@ sub init {
   if($self->{entity_type_description} &&
      !$self->{id_entity_type}) {
     my $ent = npg::model::entity_type->new({
-					    description => $self->{entity_type_description},
-					    util        => $self->util(),
-					   });
+                                          description => $self->{entity_type_description},
+                                          util        => $self->util(),
+                                          });
     $self->{id_entity_type} = $ent->id_entity_type();
   }
 
@@ -56,10 +51,10 @@ sub init {
      !$self->{id_event_type} &&
      $self->{id_entity_type}) {
     my $ent = npg::model::event_type->new({
-					   description    => $self->{event_type_description},
-					   id_entity_type => $self->{id_entity_type},
-					   util           => $self->util(),
-					  });
+                                          description    => $self->{event_type_description},
+                                          id_entity_type => $self->{id_entity_type},
+                                          util           => $self->util(),
+                                          });
     $self->{id_event_type} = $ent->id_event_type();
   }
   return $self;
@@ -72,9 +67,9 @@ sub create {
   if($self->{entity_type_description} &&
      !$self->{id_entity_type}) {
     my $et = npg::model::entity_type->new({
-					   util        => $util,
-					   description => $self->{'entity_type_description'},
-					  });
+                                          util        => $util,
+                                          description => $self->{'entity_type_description'},
+                                          });
     $self->{id_entity_type} = $et->id_entity_type();
   }
 
@@ -82,10 +77,10 @@ sub create {
      $self->{id_entity_type} &&
      !$self->{id_event_type}) {
     my $et = npg::model::event_type->new({
-					  util           => $util,
-					  description    => $self->{event_type_description},
-					  id_entity_type => $self->{id_entity_type},
-					 });
+                                         util           => $util,
+                                         description    => $self->{event_type_description},
+                                         id_entity_type => $self->{id_entity_type},
+                                        });
     $self->{event_type}    = $et;
     $self->{id_event_type} = $et->id_event_type();
   }
@@ -112,8 +107,6 @@ __END__
 npg::model::event
 
 =head1 VERSION
-
-$Revision: 14928 $
 
 =head1 SYNOPSIS
 

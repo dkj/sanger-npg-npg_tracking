@@ -1,10 +1,6 @@
 #########
 # Author:        rmp
-# Maintainer:    $Author: mg8 $
 # Created:       2006-10-31
-# Last Modified: $Date: 2012-02-22 10:12:17 +0000 (Wed, 22 Feb 2012) $
-# Id:            $Id: run_status_dict.pm 15220 2012-02-22 10:12:17Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/model/run_status_dict.pm $
 #
 package npg::model::run_status_dict;
 use strict;
@@ -14,7 +10,7 @@ use English qw(-no_match_vars);
 use Carp;
 use npg::model::run_status;
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevision: 15220 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 
 __PACKAGE__->mk_accessors(fields());
 __PACKAGE__->has_all();
@@ -70,8 +66,8 @@ sub runs {
   $query .= q( ORDER BY r.id_run DESC);
 
   $query    = $self->util->driver->bounded_select($query,
-						  $params->{len},
-						  $params->{start});
+                                                 $params->{len},
+                                                 $params->{start});
 
   return $self->gen_getarray($pkg, $query, $self->id_run_status_dict());
 }
@@ -131,8 +127,6 @@ __END__
 npg::model::run_status_dict
 
 =head1 VERSION
-
-$LastChangedRevision: 15220 $
 
 =head1 SYNOPSIS
 

@@ -1,10 +1,6 @@
 #########
 # Author:        ajb
-# Maintainer:    $Author: js10 $
 # Created:       2009-01-21
-# Last Modified: $Date: 2012-03-20 12:02:08 +0000 (Tue, 20 Mar 2012) $
-# Id:            $Id: instrument_utilisation.pm 15357 2012-03-20 12:02:08Z js10 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/model/instrument_utilisation.pm $
 #
 package npg::model::instrument_utilisation;
 use strict;
@@ -22,7 +18,7 @@ use npg::util::image::merge;
 use DateTime;
 use Readonly;
 
-Readonly::Scalar our $VERSION => do { my ($r) = q$Revision: 15357 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 
 Readonly::Scalar our $PERCENTAGE    => 100;
 Readonly::Scalar our $DATE          => 0;
@@ -84,18 +80,6 @@ sub init {
 sub default_num_days {
   my $self = shift;
   return $THIRTY_DAYS;
-}
-
-
-sub last_30_days {
-
-  my ($self, $insts) = @_;
-  carp q[npg::model::instrument_utilisation->last_30_days() is deprecated, use npg::model::instrument_utilisation->last_X_days() instead];
-  if (!$insts) {
-    croak 'no instrument grouping provided';
-  }
-
-  return $self->last_x_days($insts);
 }
 
 sub last_x_days {
@@ -472,8 +456,6 @@ npg::model::instrument_utilisation
 
 =head1 VERSION
 
-$Revision: 15357 $
-
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
@@ -499,10 +481,6 @@ $Revision: 15357 $
 
   my $aLastXDays = $oInstrumentUtilisation->last_X_days('total_insts|official_insts|prod_insts', $num_days);
   my $aLastXDays = $oInstrumentUtilisation->last_X_days('total_insts|official_insts|prod_insts');
-
-=head2 last_30_days - method for querying the last 30 days worth of data for particular columns, returning an arrayref of rows, ordered by date, [date, number_of_insts, perc_util, perc_uptime]. This method is now deprecated; use last_X_days instead
-
-  my $aLast30Day = $oInstrumentUtilisation->last_30_days('total_insts|official_insts|prod_insts');
 
 =head2 table_data_total_insts - method for calling last X days worth of data for total_insts. If the number of days argument is not supplied, defaults to the number of days returned by $oInstrumentUtilisation->default_num_days method.
 

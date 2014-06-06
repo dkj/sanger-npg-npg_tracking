@@ -1,10 +1,6 @@
 #########
 # Author:        ajb
-# Maintainer:    $Author: gq1 $
 # Created:       2007-03-27
-# Last Modified: $Date: 2010-05-04 15:28:42 +0100 (Tue, 04 May 2010) $
-# Id:            $Id: instrument_mod.pm 9207 2010-05-04 14:28:42Z gq1 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/view/instrument_mod.pm $
 #
 package npg::view::instrument_mod;
 use base qw(npg::view);
@@ -16,7 +12,8 @@ use npg::model::instrument_mod;
 use npg::model::instrument_mod_dict;
 use Readonly;
 
-Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevision: 9207 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
+
 Readonly::Scalar our $LIMIT_ATOM_ENTRIES => 40;
 
 sub authorised {
@@ -106,13 +103,13 @@ sub update_mods {
         }
       }
       my $new_mod = npg::model::instrument_mod->new({
-						     util => $util,
-						     id_instrument => $id_instrument,
-						     id_instrument_mod_dict => $id_instrument_mod_dict,
-						     id_user    => $id_user,
-						     date_added => $date,
-						     iscurrent  => $iscurrent,
-						    });
+                 util => $util,
+                 id_instrument => $id_instrument,
+                 id_instrument_mod_dict => $id_instrument_mod_dict,
+                 id_user    => $id_user,
+                 date_added => $date,
+                 iscurrent  => $iscurrent,
+                });
       $new_mod->create();
     }
     1;
@@ -146,8 +143,6 @@ __END__
 npg::view::instrument_mod - view handling for instrument_mods
 
 =head1 VERSION
-
-$LastChangedRevision: 9207 $
 
 =head1 SYNOPSIS
 

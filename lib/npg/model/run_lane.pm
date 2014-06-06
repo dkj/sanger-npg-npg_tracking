@@ -1,10 +1,6 @@
 #########
 # Author:        rmp
-# Maintainer:    $Author: mg8 $
 # Created:       2006-10-31
-# Last Modified: $Date: 2012-03-08 11:21:27 +0000 (Thu, 08 Mar 2012) $
-# Id:            $Id: run_lane.pm 15308 2012-03-08 11:21:27Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/model/run_lane.pm $
 #
 package npg::model::run_lane;
 use strict;
@@ -19,7 +15,7 @@ use npg::model::run_lane_annotation;
 use npg::model::annotation;
 use Readonly;
 
-Readonly::Scalar our $VERSION => do { my ($r) = q$Revision: 15308 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 Readonly::Scalar our $GOOD_CLUSTERS_PF        => 10_000;
 Readonly::Scalar our $GOOD_PERC_ERROR_RATE_PF => 1;
 Readonly::Scalar our $GOOD_PERC_CLUSTERS_PF   => 45;
@@ -111,28 +107,28 @@ sub save_tags {
   eval {
     for my $tag (@{$tags_to_save}) {
       $tag = npg::model::tag->new({
-				   tag  => $tag,
-				   util => $util,
-				  });
+                                  tag  => $tag,
+                                  util => $util,
+                                  });
 
       if (!$tag->id_tag()) {
         $tag->create();
       }
 
       my $tag_run_lane = npg::model::tag_run_lane->new({
-							util         => $util,
-							id_tag       => $tag->id_tag(),
-							id_run_lane  => $self->id_run_lane(),
-						       });
+                                                      util         => $util,
+                                                      id_tag       => $tag->id_tag(),
+                                                      id_run_lane  => $self->id_run_lane(),
+                                                      });
       $tag_run_lane->date($date);
       $tag_run_lane->id_user($requestor->id_user());
       $tag_run_lane->create();
 
       my $tag_freq = 'npg::model::tag_frequency'->new({
-						       id_tag => $tag->id_tag(),
-						       id_entity_type => $entity_type->id_entity_type,
-						       util => $util,
-						      });
+                                                      id_tag => $tag->id_tag(),
+                                                      id_entity_type => $entity_type->id_entity_type,
+                                                      util => $util,
+                                                      });
 
       my $freq = $dbh->selectall_arrayref(q{SELECT COUNT(id_tag) FROM tag_run_lane WHERE id_tag = ?}, {}, $tag->id_tag())->[0]->[0];
       $tag_freq->frequency($freq);
@@ -163,20 +159,20 @@ sub remove_tags {
   eval {
     for my $tag (@{$tags_to_remove}) {
       $tag = npg::model::tag->new({
-				   tag  => $tag,
-				   util => $util,
-				  });
+                                  tag  => $tag,
+                                  util => $util,
+                                  });
       my $tag_run_lane = npg::model::tag_run_lane->new({
-							id_tag      => $tag->id_tag(),
-							id_run_lane => $self->id_run_lane(),
-							util        => $util,
-						       });
+                                                       id_tag      => $tag->id_tag(),
+                                                       id_run_lane => $self->id_run_lane(),
+                                                       util        => $util,
+                                                       });
       $tag_run_lane->delete();
       my $tag_freq = 'npg::model::tag_frequency'->new({
-						       id_tag         => $tag->id_tag(),
-						       id_entity_type => $entity_type->id_entity_type,
-						       util           => $util,
-						      });
+                                                      id_tag         => $tag->id_tag(),
+                                                      id_entity_type => $entity_type->id_entity_type,
+                                                      util           => $util,
+                                                      });
       my $freq = $dbh->selectall_arrayref(q{SELECT COUNT(id_tag) FROM tag_run_lane WHERE id_tag = ?}, {}, $tag->id_tag())->[0]->[0];
       $tag_freq->frequency($freq);
       $tag_freq->save();
@@ -202,8 +198,6 @@ __END__
 npg::model::run_lane
 
 =head1 VERSION
-
-$Revision: 15308 $
 
 =head1 SYNOPSIS
 

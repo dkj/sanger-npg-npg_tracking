@@ -1,10 +1,6 @@
 #############
-# $Id: mailer.pm 16549 2013-01-23 16:49:39Z mg8 $
 # Created By: ajb
-# Mast Maintained By: $Author: mg8 $
 # Created On: 2009-06-15
-# Last Changed On: $Date: 2013-01-23 16:49:39 +0000 (Wed, 23 Jan 2013) $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/util/mailer.pm $
 
 package npg::util::mailer;
 use strict;
@@ -15,7 +11,7 @@ use English qw{-no_match_vars};
 use Class::Std;
 use MIME::Lite;
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevision: 16549 $ =~ /(\d+)/mxs; $r; };
+our $VERSION = '0';
 
 {
   ## no critic (ProhibitUnusedVariables)
@@ -58,14 +54,14 @@ use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevis
     }
 
     my $msg = MIME::Lite->new(
-			  To            => (join q(, ), @{$self->get_to()}),
-			  From          => $self->get_from(),
+        To            => (join q(, ), @{$self->get_to()}),
+        From          => $self->get_from(),
         Cc            => (join q(, ), @{$self->get_cc}),
         Bcc           => (join q(, ), @{$self->get_bcc}),
-			  Subject       => $self->get_subject(),
-			  Type          => $self->get_type(),
-			  Data          => $self->get_body(),
-			  'Precedence:' => $self->get_precendence(),
+        Subject       => $self->get_subject(),
+        Type          => $self->get_type(),
+        Data          => $self->get_body(),
+        'Precedence:' => $self->get_precendence(),
       );
 
     eval {
@@ -87,8 +83,6 @@ __END__
   npg::util::mailer
 
 =head1 VERSION
-
-$LastChangedRevision: 16549 $
 
 =head1 SYNOPSIS
 
@@ -118,8 +112,6 @@ $LastChangedRevision: 16549 $
 
 =item Class::Std
 
-=item Readonly
-
 =item base
 
 =back
@@ -130,11 +122,11 @@ $LastChangedRevision: 16549 $
 
 =head1 AUTHOR
 
-$Author: mg8 $
+Andy Brown
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2009 Andy Brown (ajb@sanger.ac.uk)
+Copyright (C) 2009 GRL by Andy Brown (ajb@sanger.ac.uk)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

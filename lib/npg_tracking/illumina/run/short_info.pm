@@ -1,21 +1,16 @@
 #############
-# $Id: short_info.pm 16549 2013-01-23 16:49:39Z mg8 $
 # Created By: ajb
-# Mast Maintained By: $Author: mg8 $
 # Created On: 2009-09-30
-# Last Changed On: $Date: 2013-01-23 16:49:39 +0000 (Wed, 23 Jan 2013) $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg_tracking/illumina/run/short_info.pm $
 
 package npg_tracking::illumina::run::short_info;
 use Moose::Role;
 use Moose::Util::TypeConstraints;
 use File::Spec::Functions qw(splitdir);
-use strict;
-use warnings;
 use Carp;
 use English qw{-no_match_vars};
+use Readonly;
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevision: 16549 $ =~ /(\d+)/mxs; $r; };
+our $VERSION = '0';
 
 Readonly::Scalar our $INSTRUMENT_PATTERN => '(IL|HS|MS)';
 Readonly::Scalar our $NAME_PATTERN => $INSTRUMENT_PATTERN.'(\d+_)0*(\d+)';
@@ -80,9 +75,9 @@ sub _build_id_run {
   my ($self) = @_;
   if ( !( $self->has_run_folder() || $self->has_name() ) ) {
       eval {
-	  $self->name();
+        $self->name();
       } or do {
-	  croak qq{Unable to obtain id_run from name : $EVAL_ERROR};
+        croak qq{Unable to obtain id_run from name : $EVAL_ERROR};
       };
   }
 
@@ -95,7 +90,7 @@ sub _build_name {
   my ($self) = @_;
   if( !( $self->has_id_run() || $self->has_run_folder() ) ) {
     eval {
-	$self->run_folder();
+      $self->run_folder();
     } or do {
         croak qq{Unable to obtain name from run_folder : $EVAL_ERROR};
     };
@@ -154,8 +149,6 @@ __END__
 npg_tracking::illumina::run::short_info
 
 =head1 VERSION
-
-$LastChangedRevision: 16549 $
 
 =head1 SYNOPSIS
 
@@ -237,11 +230,11 @@ returns the name of the instrument found
 
 =head1 AUTHOR
 
-$Author: mg8 $
+Andy Brown
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2009 Andy Brown (ajb@sanger.ac.uk)
+Copyright (C) 2009 GRL by Andy Brown (ajb@sanger.ac.uk)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -1,5 +1,159 @@
 CHANGES
 
+ - sensor.pm now uses npg::api::request to allow for caching xml feeds when
+   retrieving sensor data
+ - web app and database adjustments for HiSeqX
+ - callbacks for uptime graphs removed
+ - removed the uptimes table from the textual listing of intruments page -
+     made page loading very slow
+ - removed upgrade schema scripts and redesign proposal file from MANIFEST
+ - merged instrument checker scripts for all existing sequencing instrument types
+ - removed instrument checker scripts for invividual seq instrument types
+ - all instrument checkers to use local libraries if available
+
+release 77.2
+ - ensure module and package version starts with a digit
+ - npg_tracking::illumina::run::folder and its tests updated; the following accessors removed:
+       data_path (unused from outside),
+       tag_qseqs_path (redundant),
+       score_path (redundant),
+       qseq_location_path (redundant);
+     tests specific for old illumina mashines (IL) removed;
+     unused analysis_path accessor reimplemented to point to the top-level custom analysis folder
+       paths from analysis_path removed;
+     definitions of most paths placed together
+     public write accessors for bam_basecall and dif_files paths since they are used from the pipeline,
+       old private accessors retained for backwards compatibility
+   
+release 77.1
+ - transcriptome changed so that a default is not used if not supplied 
+ - transcriptome version directory changed so tests changed accordingly
+ - reference find changed to handle transcriptome version parsing
+ - unused templates removed
+ - samplesheet regenerated when the existing file does not come from the currently
+   pending run
+ - samplesheet daemon moved to a staging server where samplesheets are stored
+ - copyright for all modules and script belongs to GRL - the copyright
+    notice edited where it was incorrect
+ - pass Illumina samplesheet study name field components through a filter to replace
+   commas
+ - use git describe directly to avoid need for gitver script
+
+release 77.0
+ - the build file and module - code improvements, POD and PBP for the module
+ - scripts and modules:
+     version variable added where needed,
+     RSC keywords removed,
+     superfluous empty lines, 'Readonly' module import and other features removed,
+     where needed, 'use Readonly' added
+ - tests - remains of RSC keywords removed
+ - the distribution test does not perform pod tests (separate tests available),
+   checks that module version matches distribution version
+ - allow staging daemon to check progress by looking for .bcl.gz files (as
+   well as .bcl files)
+
+release 76.5
+ - code action on Build only if install target specified
+ - global removal of [LastChanged]Version from POD; change VERSION svn declaration to ='0';
+ - added modules to handle locating of transcriptome files required by tophat2
+ - updated reference module with additions needed by transcriptome
+ - added new test for transcriptome
+ - updated reference test to check that transcriptome directory structure exists
+ - added files from a transcriptomics run for use in test
+
+release 76.4
+ - replace uri_escape() by uri_escape_utf8()
+ - some unused code removed
+ - some small test scripts merged into related larger test scripts
+ - VERSION variable and headers with SVN properties removed from test files
+ - all test scripts are given .t extension 
+ - unnecessary 'use' statements removed from tests
+ - server-wide definition for modperl custom perl libraries location in order
+   to provide consistent perl environment for all scripts at server start-up
+   time
+
+release 76.3
+ - use staging area for staging daemon logs
+
+release 76.2
+ - lims samplesheet driver bug fix - spiked phix tag index should be defined for plexes
+ - method to return the name of the env. var for the cached samplesheet file
+ - misleading xml lims driver POD entry fixed
+
+release 76.1
+ - use scratch110 for references as scratch109 is hanging
+ - extend timeout for Jenkins auto-logout
+
+release 76.0
+ - added defaults for Perl indentation in Emacs for this repository
+ - definition of the repository root for single nucleotide variation files
+ - a new module defining rules for finding single nucleotide variation files
+ - changes to the database schema and code to ensure compliance with sql
+   strict mode, relevant changes to tests and test data
+ - if batch_id is not supplied at run creation, enforce zero in the model,
+     wider tests to be performed if NULL needs to be used
+ - id_run_pair defaults to null; examining and setting this field removed
+     from the code, the concept of run-pair has not been used for a long time
+ - use ${JENKINS_HOME}/tmp instead of /tmp for jenkins tmpdir 
+ - add perlcritic policy to prohibit tabs, convert tab to two white space, correct 
+   indentation issues
+ - old and unused apache configuration files removed
+ - IL instruments removed from instrument utilisation menu (we do not have them any more)
+ - instrument uptime menu link removed - target graph is broken
+ - consolidated all instrument menu 70* tests in one 20 test
+ - removed code repetition from bin/ga_II_checker
+ - removed depricated last_30_days method from npg::model::instrument_utilisation
+ - fixed the code where in test conditions operations on undefined variables
+   were performed
+ - removed excessive verbosity in most of the tests
+ - documentation in README, INSTALL and REDESIGN_PROPOSAL updated
+
+release 75.6
+ - extended inline index to read 2
+ - hardcoded link for enigmatic authentication (not mod perl url) page so that the page
+   is accessible from the server on sfweb, where enigmatic is not deployed;
+   uncomment old code to restore the relative to the server root link for testing
+ - apache2.2 compatible configuration files to run the tracking server under
+   default apache version for Ubuntu precise; virtual host definitions in
+   stand-alone files allow for dynamic inclusion of virtual hosts
+ - fixed occasional authentication problem (inability of a particular thread to load
+   additional modules due to the fact that on a second invocation of npg script in the
+   same server thread @INC array is not extended since BEGIN block is not run) when
+   running under apache2.2 by extending the server @INC array at server start up time 
+ - bam, cram, etc files access is prohibited from the runfolder directories listings,
+   however, these files are visible in listings
+ - more convenient sorting order of directories and files in the runfolder directories
+   listings
+ - directory index CSS changed to get a margin on the left; brighter color scheme
+   introduced
+ - Build.PL file extended to ensure that the shebang line of CGI scripts is
+   set to the Perl interpreter that is used for deployment
+ - explicit setting of PATH is removed from CGI scripts that do not use shell commands
+ - SVN-dependant VERSION removed from CGI scripts
+ - where necessary, PERL5LIB of CGI scripts is extended
+ - links to staging area server are picked up from config "staging_url" parameter,
+   and so are relative (to current host and port) if this is empty or non-existent
+ - switch to samplesheet driver if NPG_CACHED_SAMPLESHEET_FILE is set
+ - spiked_phix_tag_index accessor implementation for the samplesheet
+   driver to ensure that spiked_phix_tag_index is defined for a pool
+
+release 75.5
+ - on Ubuntu precise daemon .pid files in /tmp directory get deleted after a week,
+   making daemons non-responsive; change modification time of the .pid
+   file when pinging the daemon, which is done at least once a day
+
+release 75.4
+ - change of default reference repository location
+
+release 75.3
+ - default UTF8 output for samplesheets
+ - add number of lanes to run list views
+ - new farm host for a samplesheet daemon
+
+release 75.2
+ - host-agnostic jenkins daemon
+ - version of npg::api::request module updated to help tracking requests
+
 release 75.1
  - patch for samplesheet parser
  - switch live npg api base URL to a different host in order to separate
@@ -8,6 +162,7 @@ release 75.1
  - removed unused save2cache method from npg::api::util
  - simplified logic for saving to cache in npg::api::request;
      removed unused save2cache method
+ - staging area indexes defined in single place
 
 release 75.0
  - authentication through npg own enigmatic.cgi residing relative to

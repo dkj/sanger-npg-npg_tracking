@@ -139,7 +139,8 @@ __PACKAGE__->has_many(
 
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-07-23 16:11:44
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6Mwfk9yLr4QrK0iBOyFoCA
-# You can replace this text with custom content, and it will be preserved on regeneration
+
+our $VERSION = '0';
 
 =head2 insert
 Override the insert function to emulate a database trigger
@@ -147,16 +148,16 @@ Override the insert function to emulate a database trigger
 =cut
 
 sub insert {
-	my ($self, @args) = @_;
+  my ($self, @args) = @_;
 
-	# first insert the sensor_data record
-	$self->next::method(@args);
+  # first insert the sensor_data record
+  $self->next::method(@args);
 
-	# Then emulate the database trigger to fill the sensor_data_instrument table
-	my @rs = $self->sensor->sensor_instruments;
-	foreach my $row (@rs) {
-		$self->create_related('sensor_data_instruments',{ id_instrument=>$row->id_instrument});
-	}
+  # Then emulate the database trigger to fill the sensor_data_instrument table
+  my @rs = $self->sensor->sensor_instruments;
+  foreach my $row (@rs) {
+    $self->create_related('sensor_data_instruments',{ id_instrument=>$row->id_instrument});
+  }
 }
 
 =head2 instruments
@@ -168,10 +169,5 @@ Related object: L<npg_tracking::Schema::Result::Instrument>
 
 __PACKAGE__->many_to_many('instruments' => 'sensor_data_instruments', 'instrument');
 
-
-1;
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
 1;

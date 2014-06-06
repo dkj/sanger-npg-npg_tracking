@@ -1,10 +1,6 @@
 #############
-# $Id: status_change.pm 16395 2013-01-07 14:04:51Z mg8 $
 # Created By: jo3
-# Last Maintained By: $Author: mg8 $
 # Created On: 2010-02-10
-# Last Changed On: $Date: 2013-01-07 14:04:51 +0000 (Mon, 07 Jan 2013) $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/email/run/status_change.pm $
 
 package npg::email::run::status_change;
 use strict;
@@ -17,28 +13,28 @@ use English qw{-no_match_vars};
 use Moose::Util::TypeConstraints;
 use POSIX qw(strftime);
 use st::api::event;
+use Readonly;
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$Revision: 16395 $ =~ /(\d+)/mxs; $r; };
-
+our $VERSION = '0';
 
 Readonly::Scalar my $TEMPLATE => 'run_status_change.tt2';
 
 Readonly::Scalar my $FAMILIES => {
-	'run pending'              => 'start',
-	'analysis pending'         => 'start',
-	'archival pending'         => 'start',
-	'analysis prelim'          => 'start',
-	'qc review pending'        => 'start',
-	'run cancelled'            => 'complete',
-	'run complete'             => 'complete',
-	'analysis complete'        => 'complete',
-	'analysis cancelled'       => 'complete',
-	'run archived'             => 'complete',
-	'analysis prelim complete' => 'complete',
-	'run quarantined'          => 'complete',
-	'run stopped early'        => 'complete',
-	'qc complete'              => 'complete',
-	'data discarded'           => 'complete',
+        'run pending'              => 'start',
+        'analysis pending'         => 'start',
+        'archival pending'         => 'start',
+        'analysis prelim'          => 'start',
+        'qc review pending'        => 'start',
+        'run cancelled'            => 'complete',
+        'run complete'             => 'complete',
+        'analysis complete'        => 'complete',
+        'analysis cancelled'       => 'complete',
+        'run archived'             => 'complete',
+        'analysis prelim complete' => 'complete',
+        'run quarantined'          => 'complete',
+        'run stopped early'        => 'complete',
+        'qc complete'              => 'complete',
+        'data discarded'           => 'complete',
 };
 
 
@@ -260,14 +256,14 @@ sub compose_st_reports {
     my @reports;
     foreach my $lane ( @{ $self->batch_details->{lanes} } ) {
         my $ref = {
-		    eventful_id   => $lane->{request_id},
-		    eventful_type => ucfirst $lane->{req_ent_name},
-		    location      => $lane->{position},
-		    identifier    => $id_run,
-		    key           => $status,
-		    message       => $message,
-		    family        => $FAMILIES->{$status} || 'update',
-		};
+                  eventful_id   => $lane->{request_id},
+                  eventful_type => ucfirst $lane->{req_ent_name},
+                  location      => $lane->{position},
+                  identifier    => $id_run,
+                  key           => $status,
+                  message       => $message,
+                  family        => $FAMILIES->{$status} || 'update',
+    };
 
         # We could send each lane report here, but I've chosen to separate the
         # steps so that testing is easier. A consequence is that this step is
@@ -293,7 +289,6 @@ npg::email::run::status_change
 
 =head1 VERSION
 
-$Revision: 16395 $
 
 =head1 SYNOPSIS
 
@@ -358,7 +353,7 @@ posting from the main 'run' method.
 
 =head1 AUTHOR
 
-$Author: mg8 $
+John O'Brien
 
 =head1 LICENSE AND COPYRIGHT
 

@@ -1,10 +1,6 @@
 #########
 # Author:        David K. Jackson
-# Maintainer:    $Author: mg8 $
 # Created:       2011-11-04
-# Last Modified: $Date: 2013-01-23 16:49:39 +0000 (Wed, 23 Jan 2013) $
-# Id:            $Id: samplesheet.pm 16549 2013-01-23 16:49:39Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/samplesheet.pm $
 #
 
 package npg::samplesheet;
@@ -14,22 +10,20 @@ use Template;
 use Carp;
 use English qw(-no_match_vars);
 use List::MoreUtils qw/any/;
-use URI::Escape qw(uri_escape);
-
+use URI::Escape qw(uri_escape_utf8);
+use Readonly;
 use npg_tracking::Schema;
 use st::api::lims;
 use st::api::lims::samplesheet;
 use npg_tracking::data::reference;
 
-use Readonly; Readonly::Scalar our $VERSION    => do { my ($r) = q$Revision: 16549 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 
 =head1 NAME
 
 npg::samplesheet
 
 =head1 VERSION
-
-$Revision: 16549 $
 
 =head1 SYNOPSIS
 
@@ -176,7 +170,7 @@ sub _build__limsreflist {
 
       my @row = ();
       if ($self->_multiple_lanes) {
-	push @row, $tmpl->position;
+        push @row, $tmpl->position;
       }
       push @row, $tmpl->library_id;
       push @row, $tmpl->sample_publishable_name;
@@ -199,7 +193,7 @@ sub _build_study_names {
   my $studies = {};
   foreach my $l (@{$self->lims}) {
     foreach my $name ($l->study_names) {
-      $studies->{$name} = 1;
+      $studies->{_csv_compatible_value($name)} = 1;
     }
   }
   my @names = sort keys %{$studies};
@@ -267,7 +261,7 @@ sub _csv_compatible_value {
       croak "Do not know how to serialize $type to a samplesheet";
       }
     } else {
-      $value = uri_escape($value);
+      $value = uri_escape_utf8($value);
       $value =~ s/\%20/ /smxg;
       $value =~ s/\%28/(/smxg;
       $value =~ s/\%29/)/smxg;
@@ -332,6 +326,10 @@ END_OF_TEMPLATE
 
 sub process {
   my ($self, @processargs) = @_;
+  my %processargs = @processargs==1 ? %{$processargs[0]} : @processargs;
+  if (not exists $processargs{'binmode'}){
+    $processargs{'binmode'} = ':utf8';
+  }
   my$tt=Template->new();
 
   my $template = $self->template_text;
@@ -351,7 +349,7 @@ sub process {
     additional_columns => $ac,
     num_sep            => $nc,
     project_name       => join(q[ ], @{$self->study_names}) || 'unknown',
-  }, $self->output, @processargs) || croak $tt->error();
+  }, $self->output, \%processargs) || croak $tt->error();
   return;
 }
 
@@ -389,7 +387,7 @@ __END__
 
 =head1 AUTHOR
 
-Author: David K. Jackson E<lt>david.jackson@sanger.ac.ukE<gt>
+David K. Jackson E<lt>david.jackson@sanger.ac.ukE<gt>
 
 =head1 LICENSE AND COPYRIGHT
 

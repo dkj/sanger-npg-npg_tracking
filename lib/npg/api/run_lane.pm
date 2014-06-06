@@ -1,7 +1,6 @@
 #########
 # Author:        rmp
 # Created:       2007-03-28
-# copied from: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/api/run_lane.pm, r16046
 #
 package npg::api::run_lane;
 use strict;
@@ -10,7 +9,7 @@ use base qw(npg::api::base);
 use Carp;
 use npg::api::run;
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$Revision: 16046 $ =~ /(\d+)/smx; $r; };
+our $VERSION = '0';
 
 __PACKAGE__->mk_accessors(fields());
 
@@ -25,9 +24,9 @@ sub new_from_xml {
   if($pkg eq 'npg::api::run_lane') {
     $util = $child->util();
     $child->{run} = npg::api::run->new({
-					util   => $util,
-					id_run => $xmlfrag->getAttribute('id_run'),
-				       });
+                                        util   => $util,
+                                        id_run => $xmlfrag->getAttribute('id_run'),
+                                      });
   }
 
   return $child;
@@ -38,9 +37,9 @@ sub run {
 
   if(!$self->{run}) {
     $self->{run} = npg::api::run->new({
-				       util   => $self->util(),
-				       id_run => $self->id_run(),
-				      });
+                                      util   => $self->util(),
+                                      id_run => $self->id_run(),
+                                      });
   }
   return $self->{run};
 }
@@ -130,8 +129,6 @@ __END__
 npg::api::run_lane - An interface onto npg.run_lane
 
 =head1 VERSION
-
-$Revision: 16046 $
 
 =head1 SYNOPSIS
 

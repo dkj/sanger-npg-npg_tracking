@@ -1,10 +1,6 @@
 #########
 # Author:        ajb
-# Maintainer:    $Author: mg8 $
 # Created:       2008-09-01
-# Last Modified: $Date: 2013-01-23 16:49:39 +0000 (Wed, 23 Jan 2013) $
-# Id:            $Id: image_map.pm 16549 2013-01-23 16:49:39Z mg8 $
-# $HeadURL: svn+ssh://svn.internal.sanger.ac.uk/repos/svn/new-pipeline-dev/npg-tracking/trunk/lib/npg/util/image/image_map.pm $
 #
 package npg::util::image::image_map;
 use strict;
@@ -12,13 +8,14 @@ use warnings;
 use base qw(Class::Accessor);
 use Carp;
 
-use Readonly; Readonly::Scalar our $VERSION => do { my ($r) = q$LastChangedRevision: 16549 $ =~ /(\d+)/mxs; $r; };
+our $VERSION = '0';
 
-Readonly our $MAX_COORDINATES  => 3;
-Readonly our $RETURN_FROM_GD_GRAPH_X1 => 0;
-Readonly our $RETURN_FROM_GD_GRAPH_Y1 => 1;
-Readonly our $RETURN_FROM_GD_GRAPH_X2 => 2;
-Readonly our $RETURN_FROM_GD_GRAPH_Y2 => 3;
+use Readonly;
+Readonly::Scalar our $MAX_COORDINATES  => 3;
+Readonly::Scalar our $RETURN_FROM_GD_GRAPH_X1 => 0;
+Readonly::Scalar our $RETURN_FROM_GD_GRAPH_Y1 => 1;
+Readonly::Scalar our $RETURN_FROM_GD_GRAPH_X2 => 2;
+Readonly::Scalar our $RETURN_FROM_GD_GRAPH_Y2 => 3;
 
 __PACKAGE__->mk_accessors(qw(image_refs));
 
@@ -104,10 +101,10 @@ sub process_instrument_gantt_values {
       if (!$previous_box) {
         $previous_box = $box_info;
         push @boxes, $box_info;
-	next;
+        next;
       }
       foreach my $ti (0..(scalar@{$previous_box} - 2)) {
-	if ($previous_box->[$ti] != $box_info->[$ti]) {
+        if ($previous_box->[$ti] != $box_info->[$ti]) {
           push @boxes, $box_info;
           $previous_box = $box_info;
           last;
@@ -147,8 +144,6 @@ __END__
 npg::util::image::image_map
 
 =head1 VERSION
-
-$LastChangedRevision: 16549 $
 
 =head1 SYNOPSIS
 
