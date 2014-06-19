@@ -11,4 +11,6 @@ before_install:
   - perlbrew install-cpanm -f
   - cpanm --version
   - cpanm --quiet --notest Alien::Tidyp
+env:
+  - TEST_AUTHOR=1 TZ=UTC0
 
