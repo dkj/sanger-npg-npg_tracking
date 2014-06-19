@@ -17,7 +17,7 @@ local $ENV{NPG_WEBSERVICE_CACHE_DIR} = q(t/data/samplesheet);
 {
   my $ss;
   my $result = q();
-  lives_ok { $ss = npg::samplesheet->new(npg_tracking_schema=>$schema, id_run=>7826, output=>\$result); } 'sample sheet object for dual index';
+  lives_ok { $ss = npg::samplesheet->new(repository=>q(t/data/repos1), npg_tracking_schema=>$schema, id_run=>7826, output=>\$result); } 'sample sheet object for dual index';
   my $expected_result = << 'RESULT_7826';
 [Header],,,,
 Investigator Name,nh4,,,
