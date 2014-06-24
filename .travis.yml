@@ -12,5 +12,5 @@ before_install:
   - cpanm --version
   - cpanm --quiet --notest Alien::Tidyp
 env:
-  - TEST_AUTHOR=1 TZ=UTC0
+  - TEST_AUTHOR=1 TZ=Europe/London
 
