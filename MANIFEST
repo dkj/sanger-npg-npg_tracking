@@ -1,4 +1,8 @@
 .dir-locals.el
+.travis.yml
+<<<<<<<				HEAD
+=======
+>>>>>>>				67723921ceec012190ce8fa64d4c797e67f4f8e2
 bin/cbot_checker
 bin/email_project_followers_run_complete_archived
 bin/event_notifications
@@ -446,6 +450,7 @@ scripts/upgrade_schema/upgrade_schema-7.0
 scripts/upgrade_schema/upgrade_schema-72.0
 scripts/upgrade_schema/upgrade_schema-72.8
 scripts/upgrade_schema/upgrade_schema-74.5
+scripts/upgrade_schema/upgrade_schema-75.comp_name
 scripts/upgrade_schema/upgrade_schema-9.0
 scripts/upgrade_schema/upgrade_schema_113_to_126
 scripts/upgrade_schema/upgrade_schema_155_to_158
@@ -826,7 +831,6 @@ t/data/gaii/staging/IL5/incoming/100708_IL3_04999/Events.log
 t/data/gaii/staging/IL5/incoming/100708_IL3_04999/Recipe_Sanger_GA2-PEM2X_2x76Cycle_v8.3.xml
 t/data/gaii/staging/IL5/incoming/not_a_dir
 t/data/gaii/staging/IL999/incoming/100622_IL3_01234/Recipe_GA2-PEM_2x76Cycle_v7.7.xml
-t/data/gaii/staging/ILorHSany_sf20/incoming/100914_HS3_05281_A_205MBABXX/Basecalling_Netcopy_complete_READ2.txt
 t/data/gaii/staging/ILorHSany_sf20/incoming/100914_HS3_05281_A_205MBABXX/Data/reports/StatusUpdate.xml
 t/data/gaii/staging/ILorHSany_sf20/incoming/100914_HS3_05281_A_205MBABXX/ImageAnalysis_Netcopy_complete_READ2.txt
 t/data/gaii/staging/ILorHSany_sf20/incoming/100914_HS3_05281_A_205MBABXX/R_mx_unInfo.xml
