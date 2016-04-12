@@ -209,11 +209,14 @@ Readonly::Hash my %ATTRIBUTE_LIST_METHODS => {
                            id
                            name
                            public_name
+                           publishable_name
                            supplier_name
                          /],
     'study'        => [qw/ accession_number
                            id
+                           description
                            name
+                           publishable_name
                            title
                          /]
 };
@@ -818,23 +821,39 @@ sub children_ia {
 
 =head2 study_publishable_name
 
-Study publishable name
+Study publishable name (accession_number, else title, else name).
 
 =cut
 sub study_publishable_name {
   my $self = shift;
   return $self->study_accession_number() || $self->study_title() || $self->study_name();
 }
+=head2 study_publishable_names
+
+A list of study publishable names. if $self->is_pool is true, returns 
+unique study publishable names of plex-level objects, otherwise returns 
+object's own study publishable name.
+Takes an optional argument with_spiked_control, which defaults to true.
+
+=cut
 
 =head2 sample_publishable_name
 
-Sample publishable name
+Sample publishable name (accession_number, else title, else name).
 
 =cut
 sub sample_publishable_name {
   my $self = shift;
   return $self->sample_accession_number() || $self->sample_public_name() || $self->sample_name();
 }
+=head2 sample_publishable_names
+
+A list of sample publishable names. if $self->is_pool is true, returns 
+unique sample publishable names of plex-level objects, otherwise returns 
+object's own sample publishable name.
+Takes an optional argument with_spiked_control, which defaults to true.
+
+=cut
 
 =head2 associated_child_lims_ia
 
@@ -869,7 +888,7 @@ sub _single_attribute {
 
 A list of library names. if $self->is_pool is true, returns unique library
 names of plex-level objects, otherwise returns object's own library name.
-Takes an optional argument with_spiked_control, wich defaults to true.
+Takes an optional argument with_spiked_control, which defaults to true.
 
 
 =cut
@@ -885,7 +904,7 @@ Similar to library_names, but for ids.
 
 A list of sample names. if $self->is_pool is true, returns unique sample
 names of plex-level objects, otherwise returns object's own sample name.
-Takes an optional argument with_spiked_control, wich defaults to true.
+Takes an optional argument with_spiked_control, which defaults to true.
 
 =cut
 
@@ -929,7 +948,7 @@ Similar to sample_names, but for supplier_names.
 
 A list of study names. if $self->is_pool is true, returns unique study
 names of plex-level objects, otherwise returns object's own study name.
-Takes an optional argument with_spiked_control, wich defaults to true.
+Takes an optional argument with_spiked_control, which defaults to true.
 
 =cut
 
